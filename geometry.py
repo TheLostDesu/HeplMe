@@ -3,13 +3,20 @@ from constansts import epsilon
 
 def is_equal(a:float, b:float)->bool:
     '''
+    inputs:
+    a-float - число которое надо сравнить
+    b-float - число которое надо сравнить
     Проверка на примерное равенство двух значений типа float
+    возвращает True или False
     '''
     return abs(a - b) < epsilon
 
 class Point():
     '''
     Базовый клас задающий точку.
+    input:
+    x:float - координата x точки
+    y:float - координата y точки
     '''
     def __init__(self, x:float, y:float)->None:
         self.x, self.y = x, y
@@ -17,6 +24,7 @@ class Point():
     def get_x(self)->float:
         '''
         Возвращает координату x
+        float
         '''
         if self.x is None:
             return 0
@@ -26,6 +34,7 @@ class Point():
     def get_y(self)->float:
         '''
         Возвращает координату y точки
+        float
         '''
         if self.y is None:
             return 0
@@ -36,74 +45,111 @@ class Point():
     def get_coords(self):
         '''
         Возвращает координаты точки
+        (x:float, y:float)
         '''
         return (self.x, self.y)
 
     def set_x(self, x:float)->None:
         '''
-        Задает координату x
+        принимает float
+        Задает координату x:float
         '''
         assert type(x) == float or type(x) == int
         set.x = x
 
     def set_y(self, y:float)->None:
         '''
-        Задает координату y
+        принимает float
+        Задает координату y:float
         '''
         assert type(y) == float or type(y) == int
         self.y = y
     
     def __eq__(self, other) -> bool:
+        '''
+        Сравнение двух точек
+        '''
         assert type(self) == type(other)
         return is_equal(self.x, other.x) and is_equal(self.y, other.y)
     
     def __ne__(self, other) -> bool:
+        '''
+        Проверяет две точки на неравенство
+        '''
         assert type(self) == type(other)
         return not self.__eq__(other)
 
     def __str__(self) -> str:
-        return "point (" + str(self.x) + ", " + str(self.y) + ")"
+        '''
+        возвращает строку вида point(x, y)
+        '''
+        return "point(" + str(self.x) + ", " + str(self.y) + ")"
     
     def __add__(self, other):
+        '''
+        other:Point
+        Складывает координаты двух точек
+        '''
         assert type(self) == type(other)
         return Point(self.x + other.x, self.y + other.y)
     
     def __sub__(self, other):
+        '''
+        other:Point
+        Находит разность координат двух точек: Point
+        '''
         assert type(self) == type(other)
         return Point(self.x - other.x, self.y - other.y)
     
     def __mul__(self, other):
+        '''
+        other:Point
+        возвращает скалярное произведение: float
+        '''
         assert type(self) == type(other)
         return self.x * other.x + self.y * other.y
     
     def __xor__(self, other):
+        '''
+        other:Point
+        возвращает псевдоскалярное произведение
+        '''
         assert type(self) == type(other)
         return self.x * other.y - self.y * other.x
     
     def __mod__(self, other):
+        '''
+        other:Point
+        возвращает центр между двумя точками:Point
+        '''
         assert type(self) == type(other)
         return Point((self.x + other.get_x()) / 2, (self.y + other.get_y()) / 2)
 
     def dist2(self, other) -> float:
         assert type(self) == type(other)
         '''
-        Возвращает расстояние до точки в квадрате.
+        other:Point
+        Возвращает расстояние до точки в квадрате:float
         '''
         return (self.x - other.x)**2 + (self.y - other.y)**2
     
     def is_parallel(self, other)->bool:
         assert type(self) == type(other)
         '''
-        Проверяет, параллельны ли два вектора с концами в этих двух точках
+        other:Point
+        возвращает, параллельны ли два вектора с концами в этих двух точках:bool
         '''
         return is_equal(self ^ other, 0)
     
-    def rotate(self, center, angle:float):
-        assert type(self) == type(center)
-        assert type(angle) == int or type(angle) == float
+    def rotate(self, center, angle:float)->None:
         '''
+        center:Point
+        angle:float
         Поворачивает точку относительно точки center на угол angle
         '''
+        assert type(self) == type(center)
+        assert type(angle) == int or type(angle) == float
+
         centered_p = self - center
         self.x = center.get_x() + centered_p.get_x() * cos(angle) + centered_p.get_y() * sin(angle)
         self.y = center.get_y() + centered_p.get_y() * cos(angle) - centered_p.get_x() * sin(angle)
@@ -111,7 +157,14 @@ class Point():
 
 class Line():
     '''
-    Базовый класс задающий прямую вида ax + by + c = 0
+    Базовый класс задающий прямую вида ax + by + c = 0\
+    принимает либо:
+    point1:Point
+    point2:Point
+    либо:
+    a:float
+    b:float
+    c:float
     '''
     def __init__(self, point1:Point = None, point2:Point = None, a:float = None, b:float = None, c:float = None)->None:
         if a is not None and b is not None and c is not None:
@@ -130,19 +183,21 @@ class Line():
     
     def get_parallel_vector(self) -> Point:
         '''
-        Возвращает координаты вектора параллельного этой прямой.
+        Возвращает координаты вектора параллельного этой прямой.:Point
         '''
         return Point(-self.b, self.a)
 
     def is_parallel(self, other) -> bool:
         '''
-        Проверяет, паралелльны ли две прямые.
+        other:Line
+        Проверяет, паралелльны ли две прямые.:bool
         '''
         assert type(self) == type(other)
         return self.get_parallel_vector().is_parallel(other.get_parallel_vector())
 
     def __xor__(self, other)->Point:
         '''
+        Other:Line
         Возвращает None если две прямые параллельны
         Иначе возвращает точку в которой они пересекаются
         '''
@@ -164,6 +219,9 @@ class Line():
 class Segment():
     '''
     Базовый класс отрезка, заданный двумя точками.
+    Принимает:
+    point1:Point
+    point2:Point
     '''
     def __init__(self, point1:Point, point2:Point):
         self.point1 = point1
@@ -171,31 +229,32 @@ class Segment():
 
     def get_up(self)->float:
         '''
-        возвращает верхнюю границу отрезка
+        возвращает верхнюю границу отрезка:float
         '''
         return max(self.point1.get_y(), self.point2.get_y())
     
     def get_down(self)->float:
         '''
-        возвращает нижнюю границу отрезка(В координатах реального мира, а не pygame)
+        возвращает нижнюю границу отрезка(В координатах реального мира, а не pygame):float
         '''
         return min(self.point1.get_y(), self.point2.get_y())
     
     def get_right(self)->float:
         '''
-        возвращает правую границу отрезка
+        возвращает правую границу отрезка:float
         '''
         return max(self.point1.get_x(), self.point2.get_x())
     
     def get_left(self)->float:
         '''
-        возвращает левую границу отрезка
+        возвращает левую границу отрезка:float
         '''
         return min(self.point1.get_x(), self.point2.get_x())
 
     def is_in(self, point:Point)->bool:
         '''
-        Проверяет, лежит ли точка на отрезке, если она лежит на прямой этого
+        point:Point
+        Проверяет, лежит ли точка на отрезке, если она лежит на прямой этого:bool
         '''
         if point == self.point1 or point == self.point2:
             return True
@@ -205,6 +264,10 @@ class Segment():
 
 
     def __eq__(self, other)->bool:
+        '''
+        other:Segment
+        Возвращает, равны ли отрезки:bool
+        '''
         assert type(self) == type(other)
         return self.point1 == other.point1 and self.point2 == other.point2
 
@@ -213,6 +276,7 @@ class Segment():
 
     def __xor__(self, other)->Point:
         '''
+        other:Segment
         Если два отрезка не пересекаются возвращает None
         Иначе возвращает Point их пересечения.
         '''
@@ -228,6 +292,8 @@ class Segment():
     
     def rotate(self, center:Point, angle:float) -> None:
         '''
+        center:Point
+        angle:float
         Поворачивает отрезок относительно точки center
         На угол angle
         '''
@@ -241,6 +307,14 @@ class Segment():
 class Rectangle():
     '''
     Базовый класс прямоугольника, заданный двумя точками, либо точкой и длинной, и углом поворота.
+    Либо
+    point1:Point
+    point2:Point
+    angle:float
+    Либо
+    point1:Point
+    lenx:float
+    leny:float
     '''
     def __init__(self, point1:Point = None, point2:Point = None, lenx:float = None, leny:float = None)->None:
         assert point1 is not None

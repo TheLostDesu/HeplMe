@@ -51,6 +51,8 @@ def test_segment_class():
     assert seg1 ^ seg2 == geometry.Point(10, 10)
     assert seg3 ^ seg2 == geometry.Point(10, 10)
 
+    seg3 = geometry.Segment(geometry.Point(10, 10), geometry.Point(10, 10))
+
     assert seg2.get_up() == 10 and seg2.get_down() == 10
     assert seg1.get_up() == 20 and seg1.get_down() == 10
 
@@ -78,3 +80,9 @@ def test_rectangle_class():
     
     polyline = geometry.Polyline([geometry.Point(10, 10), geometry.Point(10, 100), geometry.Point(100, 100)])
     assert len(rectangle2.intersect_poly(polyline)) == 0
+
+
+def test_ray_class():
+    ray = geometry.Ray(geometry.Point(10, 10), geometry.Point(10, 20))
+    segment = geometry.Segment(geometry.Point(15, 15), geometry.Point(10, 20))
+    assert ray.intersect_with_segment(segment) is not None

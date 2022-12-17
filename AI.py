@@ -59,6 +59,7 @@ class Deciser():
     
 
     def store_transition(self, state, action, reward, next_state, done):
+        
         index = self.mem_cntrl % self.max_mem_size
         self.state_memory[index] = state
         self.new_state_memory[index] = next_state
@@ -70,6 +71,10 @@ class Deciser():
     
 
     def choose_action(self, observation):
+        '''
+        observation:list
+        Выбор действия исходя из состояния
+        '''
         if np.random.random() > self.epsilon:
             state = T.tensor([observation]).to(self.Q.device)
             actions = self.Q.forward(state)
@@ -78,7 +83,10 @@ class Deciser():
             action = np.random.choice(self.actions)
         return action
     
-    def learn(self):
+    def learn(self)->None:
+        '''
+        Отвечает за обучение нейросети
+        '''
         if self.mem_cntrl < self.batch_size:
             return
         
@@ -129,6 +137,7 @@ class AI_car(car):
     def get_observation(self) -> list:
         '''
         Функция получения наблюдения за средой
+        Возвращает набор дистанций до пересечений:list
         '''
         rct = self.car_rect
         point1 = rct.point1 % rct.point2
@@ -168,7 +177,7 @@ class AI_car(car):
 
     def get_reward(self)->int:
         '''
-        Функция выдачи награды
+        Возвращает награду ИИ за действие:int
         '''
         if self.check_crash():
             return -10
